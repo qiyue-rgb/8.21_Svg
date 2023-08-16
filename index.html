@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SVG.js Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.0/svg.min.js"></script>
+    <style>
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="svgContainer"></div>
+    <script>
+      const CONTAINER_WIDTH = 340;
+      const CONTAINER_HEIGHT = 250;
+
+      // 创建SVG容器
+      const draw = SVG()
+        .addTo('#svgContainer')
+        .size(CONTAINER_WIDTH, CONTAINER_HEIGHT)
+        .viewbox(0, 0, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+      // 设置背景色
+      draw.rect(CONTAINER_WIDTH, CONTAINER_HEIGHT).fill('#f2f2f2');
+
+      // 保存SVG图形
+      const str = draw.svg();
+      console.log(str);
+    </script>
+  </body>
+</html>
