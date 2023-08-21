@@ -1,34 +1,136 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>SVG.js Example</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.0/svg.min.js"></script>
-    <style>
-      html,
-      body {
-        padding: 0;
-        margin: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="svgContainer"></div>
-    <script>
-      const CONTAINER_WIDTH = 340;
-      const CONTAINER_HEIGHT = 250;
+	<head>
+		<title>SVG.js Example</title>
+		<!--  引入 SVG.js 库 -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.0/svg.min.js"></script>
+		<style>
+			html,
+			body {
+				padding: 0;
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="svgContainer"></div>
+		<script>
+			const CONTAINER_WIDTH = 340
+			const CONTAINER_HEIGHT = 250
 
-      // 创建SVG容器
-      const draw = SVG()
-        .addTo('#svgContainer')
-        .size(CONTAINER_WIDTH, CONTAINER_HEIGHT)
-        .viewbox(0, 0, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+			// 通过 fetch 获取其他 JSON 文件的内容
+			fetch('./data.json')
+				.then(response => response.json())
+				.then(async res => {
+					// 解析 JSON 数据
+					let data = res.data[0]
+					console.log('data', data)
+					// 获取 icon_normal 中的参数
+					const {
+						transform,
+						height_percent,
+						icon_text_position,
+						icon_text,
+						icon_tag,
+						mode,
+						mode_width,
+						effect,
+						icon_style,
+						gradient,
+						scale,
+						color,
+						colors,
+						colors_list,
+						position,
+						view_box,
+						buy_copyright,
+						color_one,
+						color_two,
+						svg_source_code,
+					} = data.icon_normal
+					// 创建SVG容器
+					const draw = SVG()
+						.addTo('#svgContainer')
+						.size(CONTAINER_WIDTH, CONTAINER_HEIGHT)
+						.viewbox(0, 0, CONTAINER_WIDTH, CONTAINER_HEIGHT)
+					// 设置背景色
+					draw.rect(CONTAINER_WIDTH, CONTAINER_HEIGHT).fill(data.background_color)
+					// 获取字体信息1
+					const fontInfo = data.font.name[0]
+					const fontFamily = fontInfo.name
+					const fontSize = fontInfo.size
+					const fontColor = fontInfo.color
+					const textContent = fontInfo.text
 
-      // 设置背景色
-      draw.rect(CONTAINER_WIDTH, CONTAINER_HEIGHT).fill('#f2f2f2');
+					// 获取字体信息2
+					const sloganInfo = data.font.slogan[0]
+					const sloganFontFamily = sloganInfo.name
+					const sloganFontSize = sloganInfo.size
+					const sloganFontColor = sloganInfo.color
+					const sloganTextContent = sloganInfo.text
+					// 异步加载字体文件并应用到文本元素1
+					const fontUrl = fontInfo.font_url
+					const fontFace = new FontFace(fontFamily, `url(${fontUrl})`)
+					await fontFace.load()
+					document.fonts.add(fontFace)
+					// 异步加载字体文件并应用到文本元素2
+					const fontUrl2 = sloganInfo.font_url
+					const fontFace2 = new FontFace(sloganFontFamily, `url(${fontUrl2})`)
+					await fontFace2.load()
+					document.fonts.add(fontFace2)
+					// 创建 SVG 元素
+					const svgElement = SVG()
+						.svg(svg_source_code)
+						.x(position.x)
+						.y(position.y)
+						.width(position.width)
+						.height(position.height)
+					svgElement.find('path').each(function () {
+						this.stroke(color)
+					})
+					// 创建组并将 SVG 元素添加到组中
+					const group = draw.group().add(svgElement)
+					//第二部分
+					// 创建 SVG 画布
+					const svgElement2 = SVG().size(200, 200)
 
-      // 保存SVG图形
-      const str = draw.svg();
-      console.log(str);
-    </script>
-  </body>
+					// 创建文本元素
+					const text = svgElement2.text(textContent).font({
+						family: fontFamily,
+						size: fontSize,
+						fill: fontColor,
+						anchor: 'middle',
+					})
+					// 设置文本的位置
+					text.center(100, 100)
+					// 将 svgElement2 添加到组中
+					group.add(svgElement2)
+					// 第三部分
+					// 创建 SVG 画布
+					const svgElement3 = SVG().size(200, 200)
+
+					// 创建文本元素
+					const sloganText = svgElement3.text(sloganTextContent).font({
+						family: sloganFontFamily,
+						size: sloganFontSize,
+						fill: sloganFontColor,
+						anchor: 'middle',
+					})
+					// 设置文本的位置
+					sloganText.center(100, 100)
+					// 将 svgElement3 添加到组中
+					group.add(svgElement3)
+					// 调整位置
+					svgElement.move(45, 100)
+					svgElement2.move(100, 10)
+					svgElement3.move(100, 50)
+					// 渲染图形到 HTML 中的某个元素
+					document.querySelector('#svgContainer').appendChild(draw.node)
+				})
+
+			// // 保存SVG图形
+			// const str = draw.svg()
+			// console.log(str)
+		</script>
+	</body>
 </html>
